@@ -120,11 +120,46 @@ x_2 <- clean %>%
   mutate(prediction = predict(model_2, type = "response")) %>% 
   mutate(pred_dvote = as.factor(ifelse(prediction > mean(prediction), "Yes", "No")))
 
+# Metrics is from tidy models- measuring how good the model is
 metrics(x_2, truth = dvote, estimate = pred_dvote) %>% 
   gt() %>% 
     tab_header("Model 2 Evaluation on All Data")
 
 # Much better! Repo before class.
 
+```
+
+initial_split(), logistic_reg(), set_engine(), fit(), predict(), bind_cols(), metrics() and vfold_cv().
+```{r}
+x3 <- clean %>% 
+  initial_split(prop = 1/2, breaks = 2)
+
+logistic_reg() %>% 
+  #glm is the default anyway
+  set_engine("glm") %>% 
+  fit(dvote ~ gender + party + state + office, data = clean) %>% 
+  #Not the same predict as the one we used above
+  predict(new_data = clean) %>% 
+  #want to compare predictions to  the truth
+  bind_cols(clean) %>%
+  metrics(truth = dvote, estimate = .pred_class)
+```
+
+```{r}
+# Picking out 1% of the data from clean (using initial split) and use the
+#training data from that to fit the same model as aboce
+
+
+x_split <- initial_split(clean, prop = 1/10)
+
+# Now copy and paste
+# how to pull out testing data that we want to work with?
+# Use training function! Now can copy and paste model from above
+
+sample_data <- training(x_split)
+
+logistic_reg() %>% 
+  set_engine("glm") %>% 
+  fit(dvote ~ gender + party + state + office, data = sample_data)
 ```
 
