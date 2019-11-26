@@ -142,7 +142,9 @@ logistic_reg() %>%
   predict(new_data = clean) %>% 
   #want to compare predictions to  the truth
   bind_cols(clean) %>%
-  metrics(truth = dvote, estimate = .pred_class)
+  metrics(truth = dvote, estimate = .pred_class) %>% 
+  gt() %>% 
+  tab_header("Model 2 Evaluations on Testing Data")
 ```
 
 ```{r}
@@ -160,6 +162,13 @@ sample_data <- training(x_split)
 
 logistic_reg() %>% 
   set_engine("glm") %>% 
-  fit(dvote ~ gender + party + state + office, data = sample_data)
+  fit(dvote ~ gender + party + state + office, data = sample_data) %>% 
+   #Not the same predict as the one we used above
+  predict(new_data = testing(x_split)) %>% 
+  #want to compare predictions to  the truth
+  bind_cols(sample_data) %>%
+  metrics(truth = dvote, estimate = .pred_class) %>% 
+  gt() %>% 
+  tab_header("Model 2 Evaluations on Testing Data")
 ```
 
